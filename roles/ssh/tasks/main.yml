@@ -1,0 +1,71 @@
+- name: Instala o cliente NFS
+  apt:
+    name: nfs-common
+    state: present
+
+- name: Mensagem de boas-vindas
+  copy:
+    dest: /etc/motd
+    content: |
+      Acesso apenas para pessoas com autorização expressa.
+      Seu acesso está sendo monitorado !!!
+
+- name: Desativa autenticação por senha
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+
+- name: Bloqueia acesso root via SSH
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin no'
+
+- name: Permite acesso somente aos grupos ifpb e vagrant
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^AllowGroups'
+    line: 'AllowGroups ifpb vagrant'
+
+- name: Garante diretório .ssh do usuário caua
+  file:
+    path: /home/caua/.ssh
+    state: directory
+    owner: caua
+    group: ifpb
+    mode: '0700'
+
+- name: Garante diretório .ssh do usuário cosme
+  file:
+    path: /home/cosme/.ssh
+    state: directory
+    owner: cosme
+    group: ifpb
+    mode: '0700'
+
+- name: Gera chave SSH para caua
+  openssh_keypair:
+    path: /home/caua/.ssh/id_rsa
+    owner: caua
+    group: ifpb
+    type: rsa
+    size: 2048
+    mode: '0600'
+
+- name: Gera chave SSH para cosme
+  openssh_keypair:
+    path: /home/cosme/.ssh/id_rsa
+    owner: cosme
+    group: ifpb
+    type: rsa
+    size: 2048
+    mode: '0600'
+
+- name: Permite sudo sem senha para o grupo ifpb
+  lineinfile:
+    path: /etc/sudoers
+    regexp: '^%ifpb'
+    line: '%ifpb ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+

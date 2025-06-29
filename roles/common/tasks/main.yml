@@ -1,0 +1,31 @@
+- name: Atualiza pacotes do sistema
+  apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Instala chrony
+  apt:
+    name: chrony
+    state: present
+
+- name: Define timezone para America/Recife
+  command: timedatectl set-timezone America/Recife
+
+- name: Cria grupo ifpb
+  group:
+    name: ifpb
+
+- name: Cria usuário caua
+  user:
+    name: caua
+    groups: ifpb
+    shell: /bin/bash
+    password: "{{ 'ifpb' | password_hash('sha512') }}"
+
+- name: Cria usuário cosme
+  user:
+    name: cosme
+    groups: ifpb
+    shell: /bin/bash
+    password: "{{ 'ifpb' | password_hash('sha512') }}"
+

@@ -1,0 +1,19 @@
+- name: Instala Firefox e xauth
+  apt:
+    name:
+      - firefox-esr
+      - xauth
+    state: present
+
+- name: Habilita encaminhamento X11
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^X11Forwarding'
+    line: 'X11Forwarding yes'
+
+- name: Reinicia o SSH
+  service:
+    name: ssh
+    state: restarted
+    enabled: true
+

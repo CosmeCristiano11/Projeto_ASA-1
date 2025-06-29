@@ -1,0 +1,12 @@
+# Playbook: db.yml
+# Configura a máquina db com:
+# - Instalação do banco de dados MariaDB
+# - Montagem automática do compartilhamento /dados/nfs do servidor arq em /var/nfs
+
+- name: Configuração do servidor DB (MariaDB e autofs)
+  hosts: db
+  become: true
+  roles:
+    - mariadb
+    - autofs
+

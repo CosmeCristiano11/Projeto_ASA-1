@@ -1,0 +1,13 @@
+# Playbook: common.yml
+# Aplica configurações básicas em todas as VMs:
+# - Atualização do sistema
+# - Configuração de timezone
+# - Sincronização de horário (chrony)
+# - Criação do grupo ifpb e dos usuários caua e cosme
+
+- name: Configuração comum
+  hosts: all
+  become: true
+  roles:
+    - common
+

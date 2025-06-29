@@ -1,0 +1,19 @@
+- name: Cria index.html personalizado (UTF-8)
+  copy:
+    dest: /var/www/html/index.html
+    content: |
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Projeto DevOps</title>
+      </head>
+      <body>
+        <h1>Projeto de Administração de Sistemas Abertos</h1>
+        <p>Integrantes: Cauã Pablo Miguel Vicente da Silva – Matrícula: 20232380036<br>
+           Cosme Cristiano Ferreira de Jesus – Matrícula: 20232380020</p>
+      </body>
+      </html>
+    owner: www-data
+    group: www-data
+    mode: '0644'
+

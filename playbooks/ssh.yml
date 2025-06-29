@@ -1,0 +1,16 @@
+# Playbook: ssh.yml
+# Configurações de segurança SSH para todas as VMs:
+# - Autenticação apenas por chave pública
+# - Bloqueia login via root
+# - Permite apenas grupos ifpb e vagrant no SSH
+# - Cria e distribui chaves para os usuários
+# - Define mensagem de boas-vindas
+# - Instala cliente NFS
+# - Configura sudo para grupo ifpb
+
+- name: Configuração SSH, sudo e chaves
+  hosts: all
+  become: true
+  roles:
+    - ssh
+

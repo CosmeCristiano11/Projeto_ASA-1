@@ -1,0 +1,23 @@
+- name: Instala o autofs
+  apt:
+    name: autofs
+    state: present
+
+- name: Configura /etc/auto.master
+  lineinfile:
+    path: /etc/auto.master
+    regexp: '^/var/nfs'
+    line: '/var/nfs /etc/auto.nfs --timeout=60'
+
+- name: Cria entrada no /etc/auto.nfs
+  copy:
+    dest: /etc/auto.nfs
+    content: "dados -rw,sync arq:/dados/nfs\n"
+    mode: '0644'
+
+- name: Reinicia o autofs
+  service:
+    name: autofs
+    state: restarted
+    enabled: true
+

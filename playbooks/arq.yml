@@ -1,0 +1,101 @@
+- name: Configuração inicial da máquina arq
+  hosts: arq
+  become: true
+  tasks:
+    - name: Atualizar pacotes
+      apt:
+        update_cache: yes
+
+    - name: Instalar DHCP server
+      apt:
+        name: isc-dhcp-server
+        state: present
+
+    - name: Criar configuração básica do dhcpd.conf
+      copy:
+        dest: /etc/dhcp/dhcpd.conf
+        content: |
+          option domain-name "caua.cosme.devops";
+          option domain-name-servers 1.1.1.1, 8.8.8.8;
+          default-lease-time 600;
+          max-lease-time 7200;
+          ddns-update-style none;
+          authoritative;
+          subnet 192.168.56.0 netmask 255.255.255.0 {
+            range 192.168.56.50 192.168.56.100;
+            option routers 192.168.56.1;
+          }
+
+    - name: Iniciar o serviço DHCP
+      service:
+        name: isc-dhcp-server
+        enabled: true
+        state: started
+
+    - name: Instalar pacotes LVM
+      apt:
+        name: lvm2
+        state: present
+
+    - name: Criar Volume Group dados
+      command: vgcreate dados /dev/sdb /dev/sdc /dev/sdd
+      args:
+        creates: /dev/dados
+
+    - name: Criar Logical Volume ifpb com 15GB
+      command: lvcreate -n ifpb -L 15G dados
+      args:
+        creates: /dev/dados/ifpb
+
+    - name: Formatar o volume ifpb como ext4
+      filesystem:
+        fstype: ext4
+        dev: /dev/dados/ifpb
+
+    - name: Criar ponto de montagem /dados
+      file:
+        path: /dados
+        state: directory
+
+    - name: Adicionar entrada no fstab
+      mount:
+        path: /dados
+        src: /dev/dados/ifpb
+        fstype: ext4
+        opts: defaults
+        state: mounted
+
+    - name: Criar usuário nfs-ifpb sem shell
+      user:
+        name: nfs-ifpb
+        shell: /usr/sbin/nologin
+        system: yes
+
+    - name: Criar subdiretório /dados/nfs
+      file:
+        path: /dados/nfs
+        state: directory
+        owner: nfs-ifpb
+        group: nfs-ifpb
+        mode: '0750'
+
+    - name: Instalar servidor NFS
+      apt:
+        name: nfs-kernel-server
+        state: present
+
+    - name: Configurar exportação NFS
+      copy:
+        dest: /etc/exports
+        content: |
+          /dados/nfs 192.168.56.0/24(rw,sync,all_squash,anonuid=1001,anongid=1001)
+
+    - name: Exportar diretórios NFS
+      command: exportfs -ra
+
+    - name: Reiniciar o serviço NFS
+      service:
+        name: nfs-server
+        state: restarted
+        enabled: true
+

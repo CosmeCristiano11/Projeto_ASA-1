@@ -1,0 +1,13 @@
+# Playbook: app.yml
+# Configura a máquina app com:
+# - Instalação do servidor Apache
+# - Substituição da página padrão com um index.html contendo nome e matrícula
+# - Montagem automática do diretório /dados/nfs via autofs em /var/nfs
+
+- name: Configuração do servidor APP (Apache e autofs)
+  hosts: app
+  become: true
+  roles:
+    - apache
+    - autofs
+

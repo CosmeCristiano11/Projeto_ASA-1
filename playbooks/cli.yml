@@ -1,0 +1,13 @@
+# Playbook: cli.yml
+# Configura a máquina cliente com:
+# - Instalação do navegador Firefox e pacote xauth
+# - Ativação do encaminhamento X11 via SSH
+# - Montagem automática do compartilhamento NFS do servidor arq em /var/nfs
+
+- name: Configuração do cliente CLI
+  hosts: cli
+  become: true
+  roles:
+    - cliente
+    - autofs
+
