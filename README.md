@@ -43,18 +43,18 @@ Este projeto tem como objetivo automatizar a criação e configuração de uma i
 
 ## Estrutura do Projeto: 
 
-Projeto_ASA/
+## Projeto_ASA/
      Vagrantfile # Define as VMs, IPs e discos
      ansible.cfg # Configuração geral do Ansible
      hosts.ini # Inventário com IPs e grupos
-playbooks/
+## playbooks/
     common.yml # Atualizações e usuários
     ssh.yml # SSH seguro e sudo
     arq.yml # DHCP, LVM, NFS
     db.yml # MariaDB + autofs
     app.yml # Apache + autofs
     cli.yml # Firefox, X11, autofs
-roles/
+## roles/
     common/
     ssh/
     dhcp/
