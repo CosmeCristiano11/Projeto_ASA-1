@@ -47,24 +47,24 @@ Projeto_ASA/
      Vagrantfile # Define as VMs, IPs e discos
      ansible.cfg # Configuração geral do Ansible
      hosts.ini # Inventário com IPs e grupos
-    playbooks/
-      common.yml # Atualizações e usuários
-      ssh.yml # SSH seguro e sudo
-      arq.yml # DHCP, LVM, NFS
-      db.yml # MariaDB + autofs
-      app.yml # Apache + autofs
-      cli.yml # Firefox, X11, autofs
-    roles/
-     common/
-        ssh/
-         dhcp/
-         lvm/
-         nfs/
-         mariadb/
-         apache/
-         autofs/
-         cliente/
-    README.md
+playbooks/
+    common.yml # Atualizações e usuários
+    ssh.yml # SSH seguro e sudo
+    arq.yml # DHCP, LVM, NFS
+    db.yml # MariaDB + autofs
+    app.yml # Apache + autofs
+    cli.yml # Firefox, X11, autofs
+roles/
+    common/
+    ssh/
+    dhcp/
+    lvm/
+    nfs/
+    mariadb/
+    apache/
+    autofs/
+    cliente/
+README.md
 
 ## Execução do Projeto:
 
@@ -82,12 +82,12 @@ Projeto_ASA/
 
 3 - Execute os plabooks na ordem correta:
 
-ansible-playbook -i hosts.ini playbooks/common.yml
-ansible-playbook -i hosts.ini playbooks/ssh.yml
-ansible-playbook -i hosts.ini playbooks/arq.yml
-ansible-playbook -i hosts.ini playbooks/db.yml
-ansible-playbook -i hosts.ini playbooks/app.yml
-ansible-playbook -i hosts.ini playbooks/cli.yml
+    ansible-playbook -i hosts.ini playbooks/common.yml
+    ansible-playbook -i hosts.ini playbooks/ssh.yml
+    ansible-playbook -i hosts.ini playbooks/arq.yml
+    ansible-playbook -i hosts.ini playbooks/db.yml
+    ansible-playbook -i hosts.ini playbooks/app.yml
+    ansible-playbook -i hosts.ini playbooks/cli.yml
 
 Validação:
 
