@@ -1,31 +1,67 @@
-- name: Atualiza pacotes do sistema
-  apt:
-    update_cache: yes
-    upgrade: dist
+---
+# Role: common
+# Descrição: Tarefas comuns a todas as máquinas
+# - Atualiza pacotes
+# - Configura timezone
+# - Instala o serviço NTP (chrony)
+# - Cria grupo ifpb
+# - Cria os usuários caua e cosme sem senha
 
-- name: Instala chrony
-  apt:
+- name: Atualiza lista de pacotes
+  ansible.builtin.apt:
+    update_cache: yes
+    upgrade: yes
+
+- name: Configura timezone para America/Recife
+  ansible.builtin.timezone:
+    name: America/Recife
+
+- name: Instala o chrony
+  ansible.builtin.package:
     name: chrony
     state: present
 
-- name: Define timezone para America/Recife
-  command: timedatectl set-timezone America/Recife
+- name: Define servidor NTP como pool.ntp.br
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^pool'
+    line: 'pool pool.ntp.br iburst'
+    state: present
+    backup: yes
 
-- name: Cria grupo ifpb
-  group:
+- name: Reinicia chrony
+  ansible.builtin.service:
+    name: chrony
+    state: restarted
+    enabled: true
+
+- name: Cria o grupo ifpb
+  ansible.builtin.group:
     name: ifpb
+    state: present
 
-- name: Cria usuário caua
-  user:
+- name: Cria usuário caua sem senha
+  ansible.builtin.user:
     name: caua
-    groups: ifpb
+    group: ifpb
     shell: /bin/bash
-    password: "{{ 'ifpb' | password_hash('sha512') }}"
+    state: present
+    password: '*'
 
-- name: Cria usuário cosme
-  user:
+- name: Cria usuário cosme sem senha
+  ansible.builtin.user:
     name: cosme
-    groups: ifpb
+    group: ifpb
     shell: /bin/bash
-    password: "{{ 'ifpb' | password_hash('sha512') }}"
+    state: present
+    password: '*'
+
+- name: Cria o usuário nfs-ifpb (se não existir)
+  user:
+    name: nfs-ifpb
+    uid: 2000
+    shell: /usr/sbin/nologin
+    state: present
+  when: ansible_facts.uid_min is defined
+
 

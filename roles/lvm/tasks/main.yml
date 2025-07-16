@@ -1,0 +1,61 @@
+---
+# Role: lvm
+# Descrição: Cria arquivos de disco, associa a loopbacks e configura LVM
+
+- name: Cria diretório para arquivos de disco
+  ansible.builtin.file:
+    path: /discos
+    state: directory
+    mode: '0755'
+
+- name: Cria arquivos de disco .img de 10GB
+  ansible.builtin.command:
+    cmd: fallocate -l 10G /discos/disk-{{ item }}.img
+    creates: /discos/disk-{{ item }}.img
+  loop: [0, 1, 2]
+
+- name: Associa os arquivos a loop devices específicos
+  ansible.builtin.command:
+    cmd: losetup /dev/loop{{ item.index }} /discos/disk-{{ item.i }}.img
+    creates: /dev/loop{{ item.index }}
+  loop:
+    - { i: 0, index: 10 }
+    - { i: 1, index: 11 }
+    - { i: 2, index: 12 }
+
+- name: Cria o volume group 'dados'
+  ansible.builtin.command:
+    cmd: vgcreate dados /dev/loop10 /dev/loop11 /dev/loop12
+    creates: /dev/dados
+  ignore_errors: false
+
+- name: Cria o logical volume 'ifpb' com 15GB
+  ansible.builtin.command:
+    cmd: lvcreate -L 15G -n ifpb dados
+    creates: /dev/dados/ifpb
+
+- name: Formata o volume com ext4
+  ansible.builtin.filesystem:
+    fstype: ext4
+    dev: /dev/dados/ifpb
+
+- name: Cria ponto de montagem /dados
+  ansible.builtin.file:
+    path: /dados
+    state: directory
+
+- name: Monta o volume em /dados
+  ansible.builtin.mount:
+    path: /dados
+    src: /dev/dados/ifpb
+    fstype: ext4
+    state: mounted
+
+- name: Garante montagem persistente no fstab
+  ansible.builtin.mount:
+    path: /dados
+    src: /dev/dados/ifpb
+    fstype: ext4
+    opts: defaults
+    state: present
+

@@ -26,19 +26,47 @@
             option routers 192.168.56.1;
           }
 
+    - name: Definir interface do DHCP no arquivo /etc/default/isc-dhcp-server
+      lineinfile:
+        path: /etc/default/isc-dhcp-server
+        regexp: '^INTERFACESv4='
+        line: 'INTERFACESv4="eth1"'
+
     - name: Iniciar o serviço DHCP
       service:
         name: isc-dhcp-server
         enabled: true
-        state: started
+        state: restarted
 
-    - name: Instalar pacotes LVM
+    - name: Instalar pacotes LVM e utilitários
       apt:
-        name: lvm2
+        name:
+          - lvm2
+          - util-linux
         state: present
 
-    - name: Criar Volume Group dados
-      command: vgcreate dados /dev/sdb /dev/sdc /dev/sdd
+    - name: Criar diretório para discos virtuais
+      file:
+        path: /discos
+        state: directory
+
+    - name: Criar arquivos .img de 10GB
+      command: fallocate -l 10G /discos/disk-{{ item }}.img
+      args:
+        creates: /discos/disk-{{ item }}.img
+      loop: [0, 1, 2]
+
+    - name: Associar arquivos aos loopbacks
+      command: losetup /dev/loop{{ item.index }} /discos/disk-{{ item.i }}.img
+      args:
+        creates: /dev/loop{{ item.index }}
+      loop:
+        - { i: 0, index: 10 }
+        - { i: 1, index: 11 }
+        - { i: 2, index: 12 }
+
+    - name: Criar Volume Group dados com os arquivos de loop
+      command: vgcreate dados /dev/loop10 /dev/loop11 /dev/loop12
       args:
         creates: /dev/dados
 

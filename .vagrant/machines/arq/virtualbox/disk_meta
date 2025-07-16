@@ -1,1 +1,1 @@
-{"disk":[{"uuid":"fbb10326-5538-47de-a819-c383d3f03f62","port":"1","device":"0","name":"disk-1","controller":"SATA Controller"},{"uuid":"26cf1698-4ba6-4f64-bf94-7ca1cb5a9987","port":"2","device":"0","name":"disk-2","controller":"SATA Controller"},{"uuid":"a617cc72-8c68-4ce5-a791-137dda9690cd","port":"3","device":"0","name":"disk-3","controller":"SATA Controller"}],"floppy":[],"dvd":[]}
+{}
