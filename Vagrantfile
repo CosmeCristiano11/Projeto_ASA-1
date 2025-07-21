@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/vagrant"
 
   config.vm.provider :virtualbox do |vb|
-    vb.memory = 512
+    vb.memory = 1024
     vb.linked_clone = true
     vb.check_guest_additions = false
   end
